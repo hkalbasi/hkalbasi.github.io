@@ -1,0 +1,21 @@
+base_url = "https://hkalbasi.github.io"
+title = "HKalbasi"
+description = "HKalbasi's English blog"
+default_language = "en"
+
+theme = "terminus"
+compile_sass = true
+generate_feeds = true
+build_search_index = false
+
+[extra]
+layout = "center"
+
+main_menu = [
+    { name = "blog", url = "blog", trailing_slash = true },
+    { name = "github", url = "https://github.com/hkalbasi", new_tab = true },
+]
+
+socials = [
+    { name = "github", url = "https://github.com/hkalbasi" },
+]

@@ -1,0 +1,42 @@
+name: Deploy Zola site to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Pinned: terminus theme is not yet compatible with Zola >= 0.23 (Tera v2).
+      # Unpin once https://github.com/ebkalderon/terminus supports it.
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: zola@0.22.1
+      - run: bash scripts/get-theme.sh
+      - run: zola build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
