@@ -63,10 +63,32 @@ I will explain the subset of the tools which I think would cover everything.
   destructors, traits and similar things not directly representable in a C ABI. Zngur emits bindings for both directions,
   so it may limits your flexibility in build systems in some way. Another tool at this level of spectrum is CXX,
   created by famous dtolnay, but I didn't include it since Zngur supports almost all patterns supported by CXX.
-  Zngur requires you 
-* autozng
-* CO2++
+  Zngur requires you to either use types behind indirections, heap allocate them,
+  or manually write the size and alignment of the types in the Zngur file. By writing down unstable layouts of Rust types,
+  you may tie yourself to a single version of rustc on a single platform,
+  so one might think Zngur is actually less compiler independent than solutions like autozng,
+  but there are options like using heap allocation or conservative layouts, trading efficiency with portability,
+  and options like autozng needs integration with compiler and build system in other ways,
+  so I think there are users who would prefer Zngur over autozng.
+* autozng: In Zngur, you need to have a zng file (which is similar to a C/C++ header file) defining the interop boundary.
+  Like a header file, the zng file is fundamentally redundant and can be auto-generated. Generating that file is the autozng's job.
+  The autozng is integrated with rustc and clang, to parse and find the list of items in C++ and Rust, respectively.
+  You need to add autozng to your build system, and these are tied to an specific versions of rustc and clang,
+  so autozng imposes hard restrictions on toolchain and lives on near the end of the spectrum.
+  There is also a Crubit from google which lies at the same point in the spectrum.
+  Crubit has some features more than Zngur and autozng, but nothing fundamentally prevent Zngur to adopt those features.
+  On the other hand, given that the Crubit requires specific toolchain integration and does not cover all users,
+  it makes sense to have Zngur and autozng which are compatible with each other and together, support more use cases. 
+* CO2++: This is the ultimate C++/Rust interop solution. Similar to the CO2, CO2++ is a language backward compatible with C++,
+  with some Rust interop features so that your C++ code can become a crate, use arbitrary other items,
+  and export items to other crates. Unlike autozng, CO2++ works with rustc's MIR, so it can work with arbitrary templates and generic items,
+  without knowing them beforehand. But great power comes with a cost. By using CO2++,
+  you need to always build your project with CO2 toolchain (equivalent to a nightly Rust toolchain).
 
-## Why not ai
+## If the goal is rewrite, why not AI?
+
+While interop tools covers many use cases, they can become cumbersome or not suitable in some cases.
+If the goal is to rewrite the project completely at the end, A natural alternative is to r
+
 a rust rewrite is a reimplementation, unless you want an unsafe translation
 reimplementation needs judgement, which LLMs miss currently
